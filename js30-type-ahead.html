@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- page data -->
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead</title>
@@ -9,34 +11,47 @@
 </head>
 
 <body>
-
+  <!-- container for inputs and results -->
   <form class="search-form">
     <input type="text" class="search" placeholder="City or State">
+    <!-- dummy text -->
     <ul class="suggestions">
       <li>Filter for a city</li>
       <li>or a state</li>
     </ul>
   </form>
+
   <script>
+    // json file with city data, for requesting
     const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+    //empty array
     const array = [];
-    fetch(endpoint).then(blob => blob.json()).then(data => array.push(...data));
+
+    // fetch takes data and runs the code without crashing should the data be not returned
+    // using then(), we take the data and confirm/change from json format
+    // another then(), in which we 'spread' and push the data into our array
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => array.push(...data));
     //console.table(array);
 
-
+    //stack overflow function to give commas to numbers
     function numberWithCommas(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
+    //function to return an array that matchs the input value using fillter
     function findInlist(value, array) {
       //console.log("test")
       return array.filter(location => {
+        //regexp() makes it so that we dont care if the value is capital or not, its a global search
         const regex = new RegExp(value, 'gi');
         return location.city.match(regex) || location.state.match(regex)
       });
     }
 
+    //function to map, or return the same value array as an html
     function displayList() {
       const matchs = findInlist(this.value, array);
       const html = matchs.map(location => {
@@ -50,14 +65,11 @@
       suggestions.innerHTML = html;
     }
 
-
-
-
-
-
+    //selecting the elements
     const input = document.querySelector(".search");
     const suggestions = document.querySelector(".suggestions");
 
+    //even listener for change
     input.addEventListener('change', displayList);
     input.addEventListener('keyup', displayList);
 
